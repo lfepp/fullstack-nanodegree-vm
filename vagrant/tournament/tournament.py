@@ -55,7 +55,8 @@ def registerPlayer(name):
 
     conn = connect()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO players (name) VALUES (%(name)s);", {"name": name})
+    cursor.execute("INSERT INTO players (name) VALUES (%(name)s);",
+                   {"name": name})
     conn.commit()
     conn.close()
 
@@ -93,6 +94,14 @@ def reportMatch(winner, loser):
       loser:  the id number of the player who lost
     """
 
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO matches (winner, loser)\
+                    VALUES (%(winner)s, %(loser)s);",
+                    {"winner": winner, "loser": loser})
+    conn.commit()
+    conn.close()
+
 
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
@@ -109,3 +118,15 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+
+    player_standings = playerStandings()
+    output = []
+    player_count = len(player_standings)
+    i = 0
+    while(i < player_count):
+        player1 = player_standings[i]
+        player2 = player_standings[i + 1]
+        tuple = (player1[0], player1[1], player2[0], player2[1])
+        output.append(tuple)
+        i += 2
+    return output

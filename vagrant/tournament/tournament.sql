@@ -19,6 +19,5 @@ CREATE TABLE players (
 CREATE TABLE matches (
   id SERIAL PRIMARY KEY,
   winner SERIAL REFERENCES players (id),
-  loser SERIAL REFERENCES players (id),
-  draw BOOLEAN DEFAULT FALSE
+  loser SERIAL REFERENCES players (id)
 );
