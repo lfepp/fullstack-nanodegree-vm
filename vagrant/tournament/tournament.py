@@ -78,7 +78,7 @@ def playerStandings():
     conn = connect()
     cursor = conn.cursor()
     cursor.execute('SELECT id, name, \
-                    (SELECT count(id) FROM matches WHERE winner = players.id AND draw IS FALSE) AS wins,\
+                    (SELECT count(id) FROM matches WHERE winner = players.id) AS wins,\
                     (SELECT count(id) FROM matches WHERE winner = players.id OR loser = players.id)\
                     AS matches FROM players ORDER BY 3 DESC;')
     results = cursor.fetchall()
