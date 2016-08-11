@@ -119,11 +119,13 @@ def swissPairings():
         name2: the second player's name
     """
 
+    # Retreive current standings
     player_standings = playerStandings()
     output = []
     player_count = len(player_standings)
     i = 0
     while(i < player_count):
+        # Pair next two players in standings against one another
         player1 = player_standings[i]
         player2 = player_standings[i + 1]
         tuple = (player1[0], player1[1], player2[0], player2[1])
