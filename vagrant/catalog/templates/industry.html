@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+{% if error %}
+<div class="alert alert-danger" role="alert">{{ error }}</div>
+{% endif %}
+<h1 class="header-text text-center">{{ industry.name }}</h1>
+{% for company in companies %}
+<div class="panel-heading">
+  <h3 class="panel-title"><a href="/industry/{{ company.industry_id }}/company/{{ company.id }}">{{ company.name }}</a></h3>
+</div>
+<div class="panel-body">
+  <p>{{ company.description }}</p>
+</div>
+{% endfor %}
+{% endblock %}
