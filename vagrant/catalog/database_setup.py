@@ -92,7 +92,7 @@ if __name__ == '__main__':
         {
             'name': 'Canon Inc.',
             'type': 'Electronics',
-            'description': 'Canon Inc. is a Japanese multinational corporation specialized in the manufacture of imaging and optical products, including cameras, camcorders, photocopiers, steppers, computer printers and medical equipment. It is headquartered in Ōta, Tokyo, Japan.'  # NOQA
+            'description': 'Canon Inc. is a Japanese multinational corporation specialized in the manufacture of imaging and optical products, including cameras, camcorders, photocopiers, steppers, computer printers and medical equipment. It is headquartered in Ota, Tokyo, Japan.'  # NOQA
         },
         {
             'name': 'General Electric',
@@ -122,12 +122,12 @@ if __name__ == '__main__':
         {
             'name': 'Nestle',
             'type': 'Food & Beverages',
-            'description': 'Nestlé S.A. is a Swiss transnational food and drink company headquartered in Vevey, Vaud, Switzerland. It is the largest food company in the world measured by revenues, and ranked #72 on the Fortune Global 500 in 2014.'  # NOQA
+            'description': 'Nestle S.A. is a Swiss transnational food and drink company headquartered in Vevey, Vaud, Switzerland. It is the largest food company in the world measured by revenues, and ranked #72 on the Fortune Global 500 in 2014.'  # NOQA
         },
         {
             'name': 'Kraft Foods',
             'type': 'Food & Beverages',
-            'description': 'Kraft Foods Group, Inc., is an American manufacturing and processing conglomerate headquartered in the Chicago suburb of Northfield, Illinois. The company was restructured in 2012 as a spin off from Kraft Foods Inc., which in turn was renamed Mondelēz International. The new Kraft Foods Group was focused mainly on grocery products for the North American market, while Mondelēz is focused on international confectionery and snack brands. Until the merger with Heinz, Kraft Foods Group was an independent public company listed on the NASDAQ stock exchange.'  # NOQA
+            'description': 'Kraft Foods Group, Inc., is an American manufacturing and processing conglomerate headquartered in the Chicago suburb of Northfield, Illinois. The company was restructured in 2012 as a spin off from Kraft Foods Inc., which in turn was renamed Mondelez International. The new Kraft Foods Group was focused mainly on grocery products for the North American market, while Mondelez is focused on international confectionery and snack brands. Until the merger with Heinz, Kraft Foods Group was an independent public company listed on the NASDAQ stock exchange.'  # NOQA
         },
         {
             'name': 'PepsiCo',
@@ -141,19 +141,19 @@ if __name__ == '__main__':
         },
         {
             'name': 'Exor',
-            'type': 'Financial',
+            'type': 'Finance',
             'description': 'Exor is an Italian investment company, controlled by the Agnelli family. With a capitalization of US$12 billion, its principal investments include Fiat Chrysler Automobiles, CNH Industrial and Ferrari. Resultantly, Exor is first as a economic group in Italy for sales volume, and the 19th in the world.'  # NOQA
         },
         {
             'name': 'Goldman Sachs',
-            'type': 'Financial',
+            'type': 'Finance',
             'description': 'The Goldman Sachs Group, Inc. is an American multinational banking firm that engages in global investment banking, investment management, securities, and other financial services, primarily with institutional clients. Goldman Sachs was founded in 1869 and is headquartered at 200 West Street in Lower Manhattan, New York City, with additional offices in other international financial centers. The firm provides asset management, mergers and acquisitions advice, prime brokerage, and underwriting services to its clients, which include corporations, governments, and individuals. The firm also engages in market making and private equity deals, and is a primary dealer in the U.S. Treasury security market.'  # NOQA
         }
     ]
     for company in companies:
         industry_id = session.query(Industry).filter_by(
             name=company['type']
-        ).one().id
+        ).first().id
         session.add(Company(
             name=company['name'],
             description=company['description'],
