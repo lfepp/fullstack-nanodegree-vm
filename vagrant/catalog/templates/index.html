@@ -10,9 +10,9 @@
 <div class="panel-heading">
   <h3 class="panel-title"><a href="/industry/{{ industry.id }}">{{ industry.name }}</a></h3>
 </div>
-  {% for company in companies.filter_by(industry_id=industry.id) %}
+  {% for company in companies[industry.name] %}
   <div class="panel-body">
-    <h4><a href="/industry/{{ industry.id }}/company/{{ company.id }}">{{ company.content }}</a></h4>
+    <h4><a href="industry/{{ industry.id }}/company/{{ company.id }}">{{ company.name }}</a></h4>
     <p>{{ company.description }}</p>
   </div>
   {% endfor %}
