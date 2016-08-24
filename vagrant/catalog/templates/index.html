@@ -10,11 +10,13 @@
 <div class="panel-heading">
   <h3 class="panel-title"><a href="/industry/{{ industry.id }}">{{ industry.name }}</a></h3>
 </div>
-  {% for company in companies[industry.name] %}
-  <div class="panel-body">
-    <h4><a href="industry/{{ industry.id }}/company/{{ company.id }}">{{ company.name }}</a></h4>
-    <p>{{ company.description }}</p>
-  </div>
+  {% for company in companies %}
+  {% if industry.id == company.industry_id %}
+    <div class="panel-body">
+      <h4><a href="industry/{{ industry.id }}/company/{{ company.id }}">{{ company.name }}</a></h4>
+      <p>{{ company.description }}</p>
+    </div>
+  {% endif %}
   {% endfor %}
 {% endfor %}
 {% endblock %}

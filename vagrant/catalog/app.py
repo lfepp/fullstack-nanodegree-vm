@@ -16,27 +16,12 @@ session = DBSession()
 @app.route('/')
 def get():
     industries = session.query(Industry)
-    companies_by_industry = {}
-    for industry in industries:
-        companies = session.query(Company).filter_by(industry_id=industry.id)
-        companies_by_industry[industry.name] = companies
+    companies = session.query(Company)
     return render_template(
         'index.html',
         industries=industries,
-        companies=companies_by_industry
+        companies=companies
     )
-        # for company in companies:
-        #     return render_template(
-        #         'company_module.html',
-        #         industry=industry,
-        #         companies=companies
-        #     )
-    # industry = session.query(Industry).first()
-    # companies = session.query(Company).filter_by(industry_id=industry.id)
-    # output = ''
-    # for company in companies:
-    #     output += "{company_name}</br>".format(company_name=company.name)
-    # return output
 
 if __name__ == '__main__':
     app.debug = True
