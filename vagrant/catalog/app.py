@@ -1,8 +1,14 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, make_response
+from flask import session as user_session
+from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Industry, Company
-
+import random
+import string
+import os
+import json
+import requests
 
 app = Flask(__name__)
 
@@ -12,6 +18,9 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+config_filname = os.path.join(os.path.dirname(__file__), 'config.json')
+with open(config_filname) as config_file:
+    config = json.load(config_file)
 
 @app.route('/')
 @app.route('/industry/')
@@ -46,6 +55,22 @@ def company(industry_id, company_id):
         company=company
     )
 
+
+@app.route('/login')
+def login():
+    state = ''.join(
+        random.choice(string.ascii_uppercase + string.digits)
+        for n in xrange(32)
+    )
+    user_session['state'] = state
+    return render_template(
+        'login.html',
+        client_id=config['google_client_id'],
+        state=state
+    )
+
 if __name__ == '__main__':
+    app.secret_key = config['google_client_secret']
+
     app.debug = True
     app.run(host='0.0.0.0', port=5000)

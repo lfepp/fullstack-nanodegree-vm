@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Catalog of some of the top companies in America's top industries</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  {% block headers %}{% endblock %}
 </head>
 <body>
   <div class="container">
@@ -20,7 +22,7 @@
             <li><a href="/signout">Sign Out</a></li>
             {% else %}
             <li><a href="/signup">Sign Up</a></li>
-            <li><a href="/signin">Sign In</a></li>
+            <li><a href="/login">Sign In</a></li>
             {% endif %}
           </ul>
         </div>
@@ -30,5 +32,6 @@
       {% block content %}{% endblock %}
     </main>
   </div>
+  {% block scripts %}{% endblock %}
 </body>
 </html>
