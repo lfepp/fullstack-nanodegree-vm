@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+{% if error %}
+<div class="alert alert-danger" role="alert">{{ error }}</div>
+{% endif %}
+<h1 class="header-text text-center">{{ company.name }}</h1>
+<div class="jumbotron text-center">
+  <p>{{ company.description }}</p>
+</div>
+{% endblock %}

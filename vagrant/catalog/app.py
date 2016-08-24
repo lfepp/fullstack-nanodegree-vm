@@ -27,12 +27,23 @@ def index():
 
 @app.route('/industry/<int:industry_id>')
 def industry(industry_id):
-    industry = session.query(Industry).filter_by(id=industry_id)
+    industry = session.query(Industry).filter_by(id=industry_id).one()
     companies = session.query(Company).filter_by(industry_id=industry_id)
     return render_template(
         'industry.html',
         industry=industry,
         companies=companies
+    )
+
+
+@app.route('/industry/<int:industry_id>/company/<int:company_id>')
+def company(industry_id, company_id):
+    industry = session.query(Industry).filter_by(id=industry_id).one()
+    company = session.query(Company).filter_by(id=company_id).one()
+    return render_template(
+        'company.html',
+        industry=industry,
+        company=company
     )
 
 if __name__ == '__main__':

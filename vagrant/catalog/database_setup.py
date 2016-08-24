@@ -28,7 +28,7 @@ class Company(Base):
         id: Item ID
         name: Name of the company
         description: Description of the company
-        category_id: ID of the industry the company is under
+        industry_id: ID of the industry the company is under
     """
 
     __tablename__ = 'company'
