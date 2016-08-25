@@ -43,7 +43,8 @@ def industry(industry_id):
     return render_template(
         'industry.html',
         industry=industry,
-        companies=companies
+        companies=companies,
+        user=user_session
     )
 
 
@@ -54,7 +55,8 @@ def company(industry_id, company_id):
     return render_template(
         'company.html',
         industry=industry,
-        company=company
+        company=company,
+        user=user_session
     )
 
 
@@ -68,7 +70,8 @@ def login():
     return render_template(
         'login.html',
         client_id=config['client_id'],
-        state=state
+        state=state,
+        user=user_session
     )
 
 
@@ -82,6 +85,7 @@ def gconnect():
     # Get access token
     credentials = json.loads(request.form.keys()[0])
     access_token = credentials['access_token']
+    print "we get this far? 1"
     url = (
         'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token={token}'
         .format(token=access_token)
@@ -89,12 +93,15 @@ def gconnect():
     h = httplib2.Http()
     r = json.loads(h.request(url, 'GET')[1])
     # Abort login if there is an error with the access token
+    print "we get this far? 2"
     if r.get('error') is not None:
         response = make_response(json.dumps(r.get('error')), 500)
         response.headers['Content-Type'] = 'application/json'
         return response
     # Verify the token is for the current user
-    print "verifying token matches user"
+    # FIXME: But how do I get the gplus ID from the id token?
+    from pprint import pprint
+    pprint(credentials)
     gplus_id = credentials['id_token']
     if r['user_id'] != gplus_id:
         response = make_response(
@@ -103,7 +110,7 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
     # Verify the access token is valid for this application
-    print "verifying token matches app"
+    print "we get this far? 3"
     if r['issued_to'] != config['client_id']:
         response = make_response(
             json.dumps('Client ID does not match client ID of token', 401)
@@ -111,24 +118,58 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
     # Store the access token in the user session
-    print "storing token to user session"
+    print "we get this far? 4"
     user_session['credentials'] = credentials.to_json()
     user_session['gplus_id'] = gplus_id
     # Get the user data
-    print "getting user data"
+    print "we get this far? 5"
     url = 'https://www.googleapis.com/oauth2/v1/userinfo'
     payload = {'access_token': credentials.access_token, 'alt': 'json'}
     r = requests.get(url, params=payload)
     user_data = r.json()
     user_session['name'] = user_data['name']
     user_session['email'] = user_data['email']
+    user_session['picture'] = user_data['picture']
+    # Get industry and company information for index
+    print "we get this far? 6"
+    industries = session.query(Industry)
+    companies = session.query(Company)
+    return render_template(
+        'index.html',
+        industries=industries,
+        companies=companies,
+        user=user_session
+    )
+
+
+@app.route('/signout')
+def gdisconnect():
+    credentials = user_session.get('credentials')
+    # Ensure user is connected
+    if credentials is None:
+        response = make_response(
+            json.dumps('Current user is not connected'), 401
+        )
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    # Revoke current access token
+    url = 'https://accounts.google.com/o/oauth2/revoke?token={token}'.format(
+        token=credentials['access_token']
+    )
+    h = httplib2.Http()
+    r = h.request(url, 'GET')[0]
+    # Check status and reset user_session if successful
+    if r['status'] == '200':
+        del user_session['credentials']
+        del user_session['gplus_id']
+        del user_session['name']
+        del user_session['email']
+        del user_session['picture']
     # Get industry and company information for index
     industries = session.query(Industry)
     companies = session.query(Company)
-    print "DONE"
     return render_template(
         'index.html',
-        user=user_session,
         industries=industries,
         companies=companies
     )

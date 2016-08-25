@@ -50,9 +50,9 @@ function signInCallback(googleUser) {
         // Handle or verify the server response if necessary.
         if (result) {
           $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
-         setTimeout(function() {
-           window.location.href = "/oauth2callback";
-         }, 4000);
+        //  setTimeout(function() {
+        //    window.location.href = "/";
+        //  }, 4000);
 
       } else if (googleUser['error']) {
     console.log('There was an error: ' + googleUser['error']);
