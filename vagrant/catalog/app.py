@@ -1,6 +1,5 @@
 from flask import Flask, render_template, make_response, request
 from flask import session as user_session
-from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Industry, Company
@@ -32,7 +31,8 @@ def index():
     return render_template(
         'index.html',
         industries=industries,
-        companies=companies
+        companies=companies,
+        user=user_session
     )
 
 
@@ -74,34 +74,14 @@ def login():
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
-    print "gconnect"
     # Validate state token
     if request.args.get('state') != user_session['state']:
         response = make_response(json.dumps('Invalid state.'), 401)
         response.headers['Content-type'] = 'application/json'
         return response
-    # Get authorization code
-    auth_code = request.data
-    # Exchange auth code for credentials
-    print "exchanging auth code"
-    try:
-        flow = flow_from_clientsecrets('config.json', scope='')
-        flow.redirect_url = 'postmessage'
-        print "redirect"
-        credentials = flow.step2_exchange(auth_code)
-        print "after creds"
-    except FlowExchangeError:
-        response = make_response(
-            json.dumps(
-                'Failed to get credentials from the authorization code.'
-            ), 401
-        )
-        response.headers['Content-Type'] = 'application/json'
-        return response
-
-    # Validate credentials
-    print "validating creds"
-    access_token = credentials.access_token
+    # Get access token
+    credentials = json.loads(request.form.keys()[0])
+    access_token = credentials['access_token']
     url = (
         'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token={token}'
         .format(token=access_token)
@@ -109,14 +89,13 @@ def gconnect():
     h = httplib2.Http()
     r = json.loads(h.request(url, 'GET')[1])
     # Abort login if there is an error with the access token
-    print "checking for errors with token"
     if r.get('error') is not None:
         response = make_response(json.dumps(r.get('error')), 500)
         response.headers['Content-Type'] = 'application/json'
         return response
     # Verify the token is for the current user
     print "verifying token matches user"
-    gplus_id = credentials.id_token['sub']
+    gplus_id = credentials['id_token']
     if r['user_id'] != gplus_id:
         response = make_response(
             json.dumps('User ID does not match user ID of token', 401)
@@ -133,7 +112,7 @@ def gconnect():
         return response
     # Store the access token in the user session
     print "storing token to user session"
-    user_session['credentials'] = credentials
+    user_session['credentials'] = credentials.to_json()
     user_session['gplus_id'] = gplus_id
     # Get the user data
     print "getting user data"

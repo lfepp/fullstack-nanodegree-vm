@@ -2,25 +2,42 @@
 {% block headers %}
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script src="//apis.google.com/js/platform.js?onload=start"></script>
+<meta name="google-signin-client_id" content="{{ client_id }}">
 {% endblock %}
 {% block content %}
 <h1 class="header-text text-center">Sign up or Login with Google</h1>
 <div id="signInButton" class="jumbotron text-center">
-  <span class="g-signin"
+  <div id="my-signin2"></div>
+  <!-- <span class="g-signin2"
     data-scope="openid email"
-    data-clientid="{{ client_id }}"
+    data-client_id="{{ client_id }}"
     data-redirecturi="postmessage"
     data-accesstype="offline"
     data-cookiepolicy="single_host_origin"
     data-callback="signInCallback"
     data-approvalprompt="force">
-  </span>
+  </span> -->
 </div>
 {% endblock %}
 {% block scripts %}
 <script>
-function signInCallback(authResult) {
-  if (authResult['code']) {
+function renderButton() {
+  gapi.signin2.render('my-signin2', {
+    'scope': 'openid email',
+    'width': 240,
+    'height': 50,
+    'longtitle': true,
+    'theme': 'dark',
+    'onsuccess': signInCallback,
+    'onfailure': failure
+  });
+}
+function failure(error) {
+  console.log(error);
+}
+function signInCallback(googleUser) {
+  var authData = googleUser.getAuthResponse();
+  if (authData) {
     // Hide the sign-in button now that the user is authorized
     $('#signinButton').attr('style', 'display: none');
     // Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the index
@@ -28,18 +45,17 @@ function signInCallback(authResult) {
       type: 'POST',
       url: '/gconnect?state={{ state }}',
       processData: false,
-      data: authResult['code'],
-      contentType: 'application/octet-stream; charset=utf-8',
+      data: JSON.stringify(authData),
       success: function(result) {
         // Handle or verify the server response if necessary.
         if (result) {
           $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
          setTimeout(function() {
-          window.location.href = "/";
+           window.location.href = "/oauth2callback";
          }, 4000);
 
-      } else if (authResult['error']) {
-    console.log('There was an error: ' + authResult['error']);
+      } else if (googleUser['error']) {
+    console.log('There was an error: ' + googleUser['error']);
   } else {
         $('#result').html('Failed to make a server-side call. Check your configuration and console.');
          }
@@ -47,4 +63,5 @@ function signInCallback(authResult) {
 
   }); } }
 </script>
+<script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
 {% endblock %}
